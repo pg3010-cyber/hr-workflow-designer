@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FlowHR · Architecture Diagrams</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #f7f6ff;
+    --surface: #ffffff;
+    --border: #e4ddf8;
+    --accent: #7c3aed;
+    --accent-light: #ede9fe;
+    --text: #1c1535;
+    --muted: #6b5fa0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    background: var(--text);
+    padding: 36px 48px;
+    display: flex; align-items: center; gap: 20px;
+  }
+  .logo {
+    width: 52px; height: 52px; border-radius: 16px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo svg { width: 28px; height: 28px; }
+  .page-header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 28px; font-weight: 700; color: white;
+  }
+  .page-header p { color: rgba(255,255,255,0.5); font-size: 14px; }
+
+  /* ── TOC ── */
+  .toc {
+    max-width: 900px; margin: 40px auto; padding: 0 32px;
+  }
+  .toc-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+  }
+  .toc-list {
+    display: flex; flex-wrap: wrap; gap: 10px; list-style: none;
+  }
+  .toc-list a {
+    font-size: 13px; font-weight: 500;
+    padding: 6px 14px; border-radius: 99px;
+    background: var(--surface); border: 1.5px solid var(--border);
+    color: var(--accent); text-decoration: none;
+    transition: all .15s;
+  }
+  .toc-list a:hover { background: var(--accent-light); }
+
+  /* ── Section ── */
+  .section {
+    max-width: 900px; margin: 0 auto 60px; padding: 0 32px;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  }
+  .section-num {
+    width: 32px; height: 32px; border-radius: 10px;
+    background: var(--accent); color: white;
+    font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 20px; font-weight: 700; color: var(--text);
+  }
+  .section-sub {
+    font-size: 13.5px; color: var(--muted); margin-top: 2px;
+  }
+  .diagram-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 24px;
+    box-shadow: 0 4px 24px rgba(124,58,237,0.07);
+    overflow-x: auto;
+  }
+
+  /* ── Legend / notes ── */
+  .note {
+    font-size: 13px; color: var(--muted);
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    padding: 10px 16px; border-radius: 0 10px 10px 0;
+    margin-top: 16px;
+  }
+
+  /* ── Mermaid theme ── */
+  .mermaid { display: flex; justify-content: center; }
+
+  /* ── Node table ── */
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13.5px;
+  }
+  thead th {
+    text-align: left; padding: 10px 14px;
+    background: var(--accent-light); color: var(--accent);
+    font-family: 'Outfit', sans-serif; font-weight: 600;
+    font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+  }
+  thead th:first-child { border-radius: 10px 0 0 0; }
+  thead th:last-child  { border-radius: 0 10px 0 0; }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody td { padding: 9px 14px; color: var(--text); }
+  tbody tr:hover td { background: var(--bg); }
+  .badge {
+    display: inline-block; padding: 2px 10px;
+    border-radius: 99px; font-size: 11.5px; font-weight: 600;
+  }
+
+  footer {
+    text-align: center; padding: 32px;
+    font-size: 12px; color: var(--muted);
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="page-header">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round">
+      <path d="M17 8C8 10 5.9 16.17 3.82 19.82L5 21l1-1c.5.5 1 1 2 1 1-2 2-6 6-8 0 0-4 4-2 10h2c0-6 4-8 4-8 1 2 0 6-2 8h2c2-4 2-8 0-12 2 0 4 2 4 4h2c0-4-4-8-9-8z"/>
+    </svg>
+  </div>
+  <div>
+    <h1>FlowHR — Architecture Diagrams</h1>
+    <p>Full architectural reference for the HR Workflow Designer · Tredence Case Study</p>
+  </div>
+</div>
+
+<!-- ── TOC ── -->
+<nav class="toc">
+  <p class="toc-title">Jump to Section</p>
+  <ul class="toc-list">
+    <li><a href="#s1">① Component Architecture</a></li>
+    <li><a href="#s2">② Data Flow</a></li>
+    <li><a href="#s3">③ State Management</a></li>
+    <li><a href="#s4">④ Workflow Graph Structure</a></li>
+    <li><a href="#s5">⑤ Mock API Contract</a></li>
+    <li><a href="#s6">⑥ Simulation Algorithm</a></li>
+    <li><a href="#s7">⑦ Node Type Reference</a></li>
+    <li><a href="#s8">⑧ Extension Playbook</a></li>
+  </ul>
+</nav>
+
+
+<!-- ──────────────────────────────────────────
+  1. COMPONENT ARCHITECTURE
+────────────────────────────────────────── -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div>
+      <div class="section-title">Component Architecture</div>
+      <div class="section-sub">React component tree showing ownership and data flow direction</div>
+    </div>
+  </div>
+  <div class="diagram-card">
+    <div class="mermaid">
+graph TD
+    App["🏠 App.tsx\nRoot Layout"]
+
+    App --> Header["🔝 Header\nBranding · Stats\nExport/Import · Run btn"]
+    App --> MainRow["MainRow\ndisplay:flex"]
+
+    MainRow --> Palette["🎨 NodePalette\nDraggable node cards\n5 node types"]
+    MainRow --> Canvas["🖼 WorkflowCanvas\nReactFlow + Provider"]
+    MainRow --> FormPanel["✏️ NodeFormPanel\nRight-side editor"]
+
+    Canvas --> RF["ReactFlow\nDrag-Drop Canvas\nMiniMap · Controls"]
+    Canvas --> Nodes["Custom Nodes ×5\nStart·Task·Approval\nAutomated·End"]
+    Nodes --> NW["NodeWrapper\nShared card UI\nHandles · Delete btn"]
+
+    FormPanel --> SF["StartNodeForm"]
+    FormPanel --> TF["TaskNodeForm"]
+    FormPanel --> AF["ApprovalNodeForm"]
+    FormPanel --> AutoF["AutomatedStepNodeForm\n↓ fetches GET /automations"]
+    FormPanel --> EF["EndNodeForm"]
+
+    App --> Sandbox["🧪 SandboxPanel\nFixed drawer modal\nRun · Execution Log"]
+    Sandbox --> SimAPI["postSimulate()\n→ POST /simulate (mock)"]
+
+    style App fill:#ede9fe,stroke:#c4b5fd,color:#4c1d95
+    style RF fill:#dbeafe,stroke:#93c5fd,color:#1e3a8a
+    style Sandbox fill:#fce7f3,stroke:#f9a8d4,color:#831843
+    style Palette fill:#dcfce7,stroke:#86efac,color:#14532d
+    style FormPanel fill:#fef9c3,stroke:#fde047,color:#78350f
+    </div>
+  </div>
+  <p class="note">💡 <strong>SandboxPanel</strong> is rendered at the App root so it can overlay the entire layout as a fixed drawer. All other panels are part of the normal document flow.</p>
+</section>
+
+
+<!-- ──────────────────────────────────────────
+  2. DATA FLOW
+────────────────────────────────────────── -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div>
+      <div class="section-title">Data Flow</div>
+      <div class="section-sub">How state flows from user interactions through the store to the canvas</div>
+    </div>
+  </div>
+  <div class="diagram-card">
+    <div class="mermaid">
+sequenceDiagram
+    actor User
+    participant Palette as NodePalette
+    participant Canvas as WorkflowCanvas
+    participant Store as Zustand Store
+    participant Form as NodeFormPanel
+    participant API as Mock API
+    participant Sandbox as SandboxPanel
+
+    User->>Palette: Drag node card
+    Palette->>Canvas: dataTransfer: type
+    Canvas->>Store: addWorkflowNode(type, position)
+    Store-->>Canvas: nodes[] updated
+    Canvas-->>User: Node appears on canvas
+
+    User->>Canvas: Click node
+    Canvas->>Store: setSelectedNode(id)
+    Store-->>Form: selectedNodeId changed
+    Form-->>User: Edit form slides in
+
+    User->>Form: Edit field value
+    Form->>Store: updateNodeData(id, {field: value})
+    Store-->>Canvas: nodes[].data updated
+    Canvas-->>User: Node card re-renders
+
+    User->>Canvas: Connect two handles
+    Canvas->>Store: onConnect(connection)
+    Store-->>Canvas: edges[] updated
+
+    User->>Header: Click "Run"
+    Header->>Sandbox: setSimulationOpen(true)
+    User->>Sandbox: Click "Run Simulation"
+    Sandbox->>API: postSimulate(nodes, edges)
+    API-->>Sandbox: SimulationResult
+    Sandbox-->>User: Step-by-step log displayed
+    </div>
+  </div>
+</section>
+
+
+<!-- ──────────────────────────────────────────
+  3. STATE MANAGEMENT
+────────────────────────────────────────── -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div>
+      <div class="section-title">State Management (Zustand)</div>
+      <div class="section-sub">Single store shape and the actions that mutate it</div>
+    </div>
+  </div>
+  <div class="diagram-card">
+    <div class="mermaid">
+classDiagram
+    class WorkflowStore {
+        +WorkflowNode[] nodes
+        +WorkflowEdge[] edges
+        +string|null selectedNodeId
+        +SimulationResult|null simulationResult
+        +boolean simulationOpen
+        +boolean simulationLoading
+
+        +onNodesChange(changes)
+        +onEdgesChange(changes)
+        +onConnect(connection)
+        +setSelectedNode(id)
+        +addWorkflowNode(type, pos)
+        +updateNodeData(id, data)
+        +deleteNode(id)
+        +setSimulationResult(r)
+        +setSimulationOpen(open)
+        +setSimulationLoading(bool)
+        +clearWorkflow()
+        +exportWorkflow() string
+        +importWorkflow(json)
+    }
+
+    class ReactFlow {
+        accepts nodes[]
+        accepts edges[]
+        emits onNodesChange
+        emits onEdgesChange
+        emits onConnect
+        emits onNodeClick
+        emits onPaneClick
+    }
+
+    class NodeFormPanel {
+        reads selectedNodeId
+        reads nodes[]
+        calls updateNodeData
+    }
+
+    class SandboxPanel {
+        reads nodes / edges
+        reads simulationResult
+        calls setSimulationOpen
+        calls setSimulationResult
+    }
+
+    WorkflowStore --> ReactFlow : feeds nodes+edges
+    WorkflowStore --> NodeFormPanel : feeds selected node data
+    WorkflowStore --> SandboxPanel : feeds simulation state
+    ReactFlow --> WorkflowStore : change events
+    NodeFormPanel --> WorkflowStore : updateNodeData()
+    SandboxPanel --> WorkflowStore : setSimulationResult()
+    </div>
+  </div>
+  <p class="note">💡 The store uses React Flow's <code>applyNodeChanges</code> / <code>applyEdgeChanges</code> helpers internally — so it stays compatible with React Flow's immutable change system while living in Zustand.</p>
+</section>
+
+
+<!-- ──────────────────────────────────────────
+  4. WORKFLOW GRAPH STRUCTURE
+────────────────────────────────────────── -->
+<section class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div>
+      <div class="section-title">Workflow Graph Structure</div>
+      <div class="section-sub">How a typical HR workflow graph is represented internally + visual</div>
+    </div>
+  </div>
+  <div class="diagram-card">
+    <div class="mermaid">
+flowchart TD
+    S([▶ Start\nEmployee Onboarding]):::start
+    T1[📋 Task\nCollect Documents\nAssignee: HR Team]:::task
+    A1{✅ Approval\nManager Sign-off\nRole: Manager}:::approval
+    AU1[⚡ Automated\nProvision Accounts\nGitHub · Slack · Jira]:::auto
+    T2[📋 Task\nConduct Orientation\nAssignee: L&D Team]:::task
+    AU2[⚡ Automated\nSend Welcome Email\nto: employee@co]:::auto
+    E([🏁 End\nOnboarding Complete!]):::end
+
+    S --> T1
+    S --> A1
+    T1 --> AU1
+    A1 -->|approved| AU1
+    AU1 --> T2
+    T2 --> AU2
+    AU2 --> E
+
+    classDef start  fill:#dcfce7,stroke:#86efac,color:#14532d
+    classDef task   fill:#dbeafe,stroke:#93c5fd,color:#1e3a8a
+    classDef approval fill:#fef9c3,stroke:#fde047,color:#78350f
+    classDef auto   fill:#ede9fe,stroke:#c4b5fd,color:#4c1d95
+    classDef end    fill:#fce7f3,stroke:#f9a8d4,color:#831843
+    </div>
+  </div>
+
+  <div class="diagram-card" style="margin-top:16px">
+    <div class="mermaid">
+graph LR
+    subgraph Node JSON Shape
+    ID["id: node-abc123"]
+    TYPE["type: 'task' | 'start' | ..."]
+    POS["position: {x, y}"]
+    DATA["data: TaskNodeData\n{title, assignee, dueDate, ...}"]
+    end
+
+    subgraph Edge JSON Shape
+    EID["id: e-xyz"]
+    SRC["source: nodeId"]
+    TGT["target: nodeId"]
+    OPTS["animated: true\nstyle: {stroke, width}\nmarkerEnd: arrowclosed"]
+    end
+    </div>
+  </div>
+</section>
+
+
+<!-- ──────────────────────────────────────────
+  5. MOCK API CONTRACT
+────────────────────────────────────────── -->
+<section class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div>
+      <div class="section-title">Mock API Contract</div>
+      <div class="section-sub">Request/response shapes for both endpoints</div>
+    </div>
+  </div>
+  <div class="diagram-card">
+    <div class="mermaid">
+graph LR
+    subgraph "GET /automations → 250ms delay"
+        R1["Response: AutomationAction[]"]
+        R1A["{ id: 'send_email',\n  label: 'Send Email',\n  params: ['to','subject','body'] }"]
+        R1B["{ id: 'provision_acc',\n  label: 'Provision Accounts',\n  params: ['userId','systems'] }"]
+        R1 --> R1A
+        R1 --> R1B
+    end
+
+    subgraph "POST /simulate → 900ms delay"
+        REQ["Request Body:\n{ nodes: WorkflowNode[],\n  edges: WorkflowEdge[] }"]
+        RES["Response: SimulationResult"]
+        RES --> STEPS["steps[]: SimulationStep\n{ nodeId, nodeType, title,\n  status, message, details,\n  timestamp }"]
+        RES --> ERRS["errors: string[]"]
+        RES --> DUR["duration: number (ms)"]
+        RES --> SUCCESS["success: boolean"]
+        REQ --> RES
+    end
+
+    style R1 fill:#dbeafe,stroke:#93c5fd
+    style RES fill:#dcfce7,stroke:#86efac
+    style REQ fill:#fef9c3,stroke:#fde047
+    </div>
+  </div>
+  <p class="note">💡 To wire up a real FastAPI backend, replace the two exported functions in <code>src/api/mockApi.ts</code> with real <code>fetch()</code> calls. The rest of the app is unchanged.</p>
+</section>
+
+
+<!-- ──────────────────────────────────────────
+  6. SIMULATION ALGORITHM
+────────────────────────────────────────── -->
+<section class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div>
+      <div class="section-title">Simulation Algorithm</div>
+      <div class="section-sub">Step-by-step logic inside <code>postSimulate()</code></div>
+    </div>
+  </div>
+  <div class="diagram-card">
+    <div class="mermaid">
+flowchart TD
+    IN["📥 Input: nodes[], edges[]"]
+    V1{"1 Start node?"}
+    V2{"≥1 End node?"}
+    V3{"Orphan nodes?"}
+    TOPO["Kahn's Algorithm\nTopological Sort\n↓ builds in-degree map"]
+    CYC{"Cycle detected?"}
+    EXEC["Execute in topo order\nfor each node → SimulationStep"]
+    SW{node.type}
+    RSTART["message: Workflow initiated"]
+    RTASK["message: Task assigned to {assignee}"]
+    RAPPR{"autoApproveThreshold > 0?"}
+    RAUTO["message: executed {actionLabel}"]
+    REND["message: {endMessage}"]
+    OUT["📤 SimulationResult\n{ success, steps[], errors[], duration }"]
+
+    IN --> V1
+    V1 -->|No| ERR["errors.push() → return {success:false}"]
+    V1 -->|Yes| V2
+    V2 -->|No| ERR
+    V2 -->|Yes| V3
+    V3 -->|Yes| WARN["warning added to errors[]"]
+    V3 -->|No| TOPO
+    WARN --> TOPO
+    TOPO --> CYC
+    CYC -->|Yes| ERR
+    CYC -->|No| EXEC
+    EXEC --> SW
+    SW -->|start| RSTART
+    SW -->|task| RTASK
+    SW -->|approval| RAPPR
+    RAPPR -->|Yes| RAUTO_A["status: completed\nauto-approved"]
+    RAPPR -->|No| RAPPR_B["status: pending\nawaiting approval"]
+    SW -->|automated| RAUTO
+    SW -->|end| REND
+    RSTART & RTASK & RAUTO_A & RAPPR_B & RAUTO & REND --> OUT
+
+    style ERR fill:#fee2e2,stroke:#fca5a5,color:#7f1d1d
+    style OUT fill:#dcfce7,stroke:#86efac,color:#14532d
+    style IN  fill:#ede9fe,stroke:#c4b5fd,color:#4c1d95
+    </div>
+  </div>
+</section>
+
+
+<!-- ──────────────────────────────────────────
+  7. NODE TYPE REFERENCE
+────────────────────────────────────────── -->
+<section class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div>
+      <div class="section-title">Node Type Reference</div>
+      <div class="section-sub">Data shapes, form fields, and visual properties for each node type</div>
+    </div>
+  </div>
+  <div class="diagram-card" style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Color</th>
+          <th>Handles</th>
+          <th>Data Interface</th>
+          <th>Form Fields</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>start</strong></td>
+          <td><span class="badge" style="background:#dcfce7;color:#14532d">🟢 Mint</span></td>
+          <td>Bottom only</td>
+          <td><code>StartNodeData</code></td>
+          <td>title, metadata (KV pairs)</td>
+        </tr>
+        <tr>
+          <td><strong>task</strong></td>
+          <td><span class="badge" style="background:#dbeafe;color:#1e3a8a">🔵 Sky</span></td>
+          <td>Top + Bottom</td>
+          <td><code>TaskNodeData</code></td>
+          <td>title*, description, assignee, dueDate, customFields (KV)</td>
+        </tr>
+        <tr>
+          <td><strong>approval</strong></td>
+          <td><span class="badge" style="background:#fef9c3;color:#78350f">🟡 Amber</span></td>
+          <td>Top + Bottom</td>
+          <td><code>ApprovalNodeData</code></td>
+          <td>title, approverRole (dropdown), autoApproveThreshold (number)</td>
+        </tr>
+        <tr>
+          <td><strong>automated</strong></td>
+          <td><span class="badge" style="background:#ede9fe;color:#4c1d95">🟣 Purple</span></td>
+          <td>Top + Bottom</td>
+          <td><code>AutomatedStepNodeData</code></td>
+          <td>title, actionId (API dropdown), actionParams (dynamic per action)</td>
+        </tr>
+        <tr>
+          <td><strong>end</strong></td>
+          <td><span class="badge" style="background:#fce7f3;color:#831843">🩷 Pink</span></td>
+          <td>Top only</td>
+          <td><code>EndNodeData</code></td>
+          <td>endMessage, summaryFlag (toggle)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+<!-- ──────────────────────────────────────────
+  8. EXTENSION PLAYBOOK
+────────────────────────────────────────── -->
+<section class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div>
+      <div class="section-title">Extension Playbook</div>
+      <div class="section-sub">How to add new node types, swap in a real backend, or add testing</div>
+    </div>
+  </div>
+  <div class="diagram-card">
+    <div class="mermaid">
+flowchart LR
+    subgraph "Add New Node Type"
+    A1["1. types/workflow.ts\nAdd NewNodeData interface"]
+    A2["2. nodes/index.tsx\nAdd NewNode component"]
+    A3["3. canvas/NodePalette.tsx\nAdd palette entry"]
+    A4["4. forms/NodeFormPanel.tsx\nAdd form component + conditional"]
+    A5["5. store/workflowStore.ts\ngetDefaultData() case"]
+    A6["6. api/mockApi.ts\npostSimulate() case"]
+    A1 --> A2 --> A3 --> A4 --> A5 --> A6
+    end
+
+    subgraph "Swap Real Backend"
+    B1["api/mockApi.ts\nReplace getAutomations()\nwith fetch('/api/automations')"]
+    B2["Replace postSimulate()\nwith fetch('/api/simulate',\n{method:'POST',body:json})"]
+    B1 --> B2
+    end
+
+    subgraph "Add Tests"
+    C1["Vitest + RTL\nUnit test each form\ncomponent in isolation"]
+    C2["Cypress E2E\nTest drag-drop, connect\nnodes, run simulation"]
+    C1 --- C2
+    end
+
+    style A1 fill:#dcfce7,stroke:#86efac
+    style B1 fill:#dbeafe,stroke:#93c5fd
+    style C1 fill:#fef9c3,stroke:#fde047
+    </div>
+  </div>
+</section>
+
+<footer>
+  FlowHR · HR Workflow Designer · Tredence Full Stack Engineering Intern Case Study<br>
+  Architecture generated for developer handoff — share this file to onboard new contributors instantly.
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#ede9fe',
+      primaryTextColor: '#1c1535',
+      primaryBorderColor: '#c4b5fd',
+      lineColor: '#a78bfa',
+      secondaryColor: '#dbeafe',
+      tertiaryColor: '#dcfce7',
+      edgeLabelBackground: '#f7f6ff',
+      clusterBkg: '#f7f6ff',
+      titleColor: '#1c1535',
+      fontFamily: 'DM Sans, sans-serif',
+      fontSize: '13px',
+    },
+    flowchart: { curve: 'basis', useMaxWidth: true },
+    sequence: { useMaxWidth: true },
+  });
+</script>
+</body>
+</html>
