@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import {
   Play, Download, Upload, Trash2, Workflow,
-  GitBranch, Layers, Undo2, Redo2, Pencil, Check, Sparkles,
+  GitBranch, Layers, Undo2, Redo2, Pencil, Check, Sparkles, LayoutGrid, Save,
 } from 'lucide-react';
 import { useWorkflowStore } from '../store/workflowStore';
 import { TemplateModal } from './templates/TemplateModal';
@@ -12,7 +12,7 @@ export function Header() {
     setSimulationOpen, simulationLoading,
     clearWorkflow, exportWorkflow, importWorkflow,
     undo, redo, canUndo, canRedo,
-    workflowName, setWorkflowName,
+    workflowName, setWorkflowName, lastSavedAt, runAutoLayout,
   } = useWorkflowStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);

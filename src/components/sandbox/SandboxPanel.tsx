@@ -5,6 +5,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { useWorkflowStore } from '../../store/workflowStore';
+import { WorkflowAnalytics } from './WorkflowAnalytics';
 import { postSimulate } from '../../api/mockApi';
 import { validateWorkflow } from '../../utils/validation';
 import type { SimulationStep, StepStatus, WorkflowNodeType } from '../../types/workflow';
@@ -323,6 +324,13 @@ export function SandboxPanel() {
                   <StepCard key={step.nodeId} step={step} index={i} />
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Analytics always visible */}
+          {!simulationLoading && (
+            <div className="mt-4 px-0">
+              <WorkflowAnalytics nodes={nodes as any} edges={edges as any} />
             </div>
           )}
 
