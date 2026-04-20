@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   X, Plus, Trash2, Play, ClipboardList, ShieldCheck,
-  Zap, Flag, ChevronDown
+  Zap, Flag, ChevronDown, Copy, AlertTriangle
 } from 'lucide-react';
 import { useWorkflowStore } from '../../store/workflowStore';
 import { getAutomations } from '../../api/mockApi';
@@ -333,7 +333,8 @@ const NODE_META: Record<string, { label: string; bgColor: string; iconColor: str
 };
 
 export function NodeFormPanel() {
-  const { nodes, selectedNodeId, setSelectedNode } = useWorkflowStore();
+  const { nodes, selectedNodeId, setSelectedNode, deleteNode, duplicateNode, simulationStatusMap } = useWorkflowStore();
+  const simStatus = selectedNodeId ? simulationStatusMap[selectedNodeId] : undefined;
   const selectedNode = nodes.find((n) => n.id === selectedNodeId);
 
   if (!selectedNode) {
@@ -393,14 +394,49 @@ export function NodeFormPanel() {
             </p>
           </div>
         </div>
-        <button
-          onClick={() => setSelectedNode(null)}
-          className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-          style={{ background: 'rgba(0,0,0,0.06)', color: meta.textColor }}
-        >
-          <X size={14} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => duplicateNode(selectedNode.id)}
+            className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+            style={{ background: 'rgba(255,255,255,0.6)', color: meta.iconColor }}
+            title="Duplicate node"
+          >
+            <Copy size={13} />
+          </button>
+          <button
+            onClick={() => { deleteNode(selectedNode.id); }}
+            className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+            style={{ background: 'rgba(220,38,38,0.12)', color: '#dc2626' }}
+            title="Delete node"
+          >
+            <Trash2 size={13} />
+          </button>
+          <button
+            onClick={() => setSelectedNode(null)}
+            className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
+            style={{ background: 'rgba(0,0,0,0.06)', color: meta.textColor }}
+            title="Close panel"
+          >
+            <X size={14} />
+          </button>
+        </div>
       </div>
+
+      {/* Simulation status indicator */}
+      {simStatus && (
+        <div
+          className="flex items-center gap-2 px-4 py-2 fade-in"
+          style={{
+            background: simStatus === 'completed' ? '#dcfce7' : simStatus === 'pending' ? '#fef9c3' : '#fee2e2',
+            borderBottom: '1px solid var(--border)',
+          }}
+        >
+          <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: simStatus === 'completed' ? '#16a34a' : simStatus === 'pending' ? '#d97706' : '#dc2626', animation: 'pulse-dot 2s infinite' }} />
+          <span className="text-xs font-semibold capitalize" style={{ color: simStatus === 'completed' ? '#14532d' : simStatus === 'pending' ? '#78350f' : '#7f1d1d', fontFamily: 'Outfit, sans-serif' }}>
+            Last run: {simStatus}
+          </span>
+        </div>
+      )}
 
       {/* Form body */}
       <div className="flex-1 overflow-y-auto p-4">

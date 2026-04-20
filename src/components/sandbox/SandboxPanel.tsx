@@ -133,19 +133,24 @@ export function SandboxPanel() {
   const {
     simulationOpen, simulationResult, simulationLoading,
     setSimulationOpen, setSimulationResult, setSimulationLoading,
+    setSimulationStatusMap,
     nodes, edges,
   } = useWorkflowStore();
 
   const runSimulation = useCallback(async () => {
     setSimulationLoading(true);
     setSimulationResult(null);
+    setSimulationStatusMap({});
     try {
       const result = await postSimulate(nodes as any, edges as any);
       setSimulationResult(result);
+      const statusMap: Record<string, import('../../types/workflow').StepStatus> = {};
+      result.steps.forEach((step: any) => { statusMap[step.nodeId] = step.status; });
+      setSimulationStatusMap(statusMap);
     } finally {
       setSimulationLoading(false);
     }
-  }, [nodes, edges, setSimulationLoading, setSimulationResult]);
+  }, [nodes, edges, setSimulationLoading, setSimulationResult, setSimulationStatusMap]);
 
   if (!simulationOpen) return null;
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Header } from './components/Header';
 import { NodePalette } from './components/canvas/NodePalette';
 import { WorkflowCanvas } from './components/canvas/WorkflowCanvas';

@@ -214,3 +214,49 @@ html, body, #root {
 .react-flow__background pattern circle {
   fill: #c4b5fd !important;
 }
+
+/* ── Floating toolbar ── */
+.react-flow__panel {
+  margin: 0 !important;
+}
+
+/* ── Animated edges highlight after simulation ── */
+@keyframes edge-flow {
+  from { stroke-dashoffset: 20; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* ── Node entrance animation ── */
+@keyframes nodeEnter {
+  from { opacity: 0; transform: scale(0.85) translateY(-8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.react-flow__node {
+  animation: nodeEnter 0.2s ease-out;
+}
+
+/* ── Template modal backdrop blur ── */
+.template-backdrop {
+  backdrop-filter: blur(10px);
+}
+
+/* ── Undo/Redo active flash ── */
+@keyframes btnFlash {
+  0%   { opacity: 1; }
+  30%  { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* ── Simulation status glow on nodes ── */
+@keyframes statusGlow {
+  0%, 100% { box-shadow: 0 0 0 2px #16a34a, 0 4px 16px rgba(22,163,74,0.15); }
+  50%       { box-shadow: 0 0 0 3px #16a34a, 0 6px 20px rgba(22,163,74,0.3);  }
+}
+
+/* ── Validation error shake ── */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-3px); }
+  40%, 80% { transform: translateX(3px); }
+}
